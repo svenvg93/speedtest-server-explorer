@@ -27,6 +27,12 @@ import {
 import { Skeleton } from '@/components/ui/skeleton'
 import { type Server } from '@/lib/types'
 
+const multiWordFilter: FilterFn<Server> = (row, _columnId, filterValue: string) => {
+  const words = filterValue.toLowerCase().split(/\s+/).filter(Boolean)
+  const rowText = row.getAllCells().map(c => String(c.getValue() ?? '')).join(' ').toLowerCase()
+  return words.every(w => rowText.includes(w))
+}
+
 export default function App() {
   const [allServers, setAllServers]         = useState<Server[]>([])
   const [query, setQuery]                   = useState(() => new URLSearchParams(window.location.search).get('q') ?? '')
@@ -35,8 +41,9 @@ export default function App() {
   const [copiedId, setCopiedId]             = useState<string | null>(null)
   const [selectedServer, setSelectedServer] = useState<Server | null>(null)
   const [aboutOpen, setAboutOpen]           = useState(false)
-  const searchRef = useRef<HTMLInputElement>(null)
-  const filterRef = useRef<HTMLInputElement>(null)
+  const searchRef    = useRef<HTMLInputElement>(null)
+  const filterRef    = useRef<HTMLInputElement>(null)
+  const copyTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   // TanStack Table state
   const [sorting, setSorting]                   = useState<SortingState>(() => {
@@ -116,23 +123,18 @@ export default function App() {
 
   const copyId = useCallback((id: string) => {
     navigator.clipboard.writeText(id).then(() => {
+      if (copyTimerRef.current) clearTimeout(copyTimerRef.current)
       setCopiedId(id)
-      setTimeout(() => setCopiedId(null), 1500)
+      copyTimerRef.current = setTimeout(() => setCopiedId(null), 1500)
     })
   }, [])
 
-  function clearFilter() {
+  const clearFilter = useCallback(() => {
     setGlobalFilter('')
     setPagination(p => ({ ...p, pageIndex: 0 }))
-  }
+  }, [])
 
   const columns = useServerColumns(copiedId, copyId)
-
-  const multiWordFilter: FilterFn<Server> = (row, _columnId, filterValue: string) => {
-    const words = filterValue.toLowerCase().split(/\s+/).filter(Boolean)
-    const rowText = row.getAllCells().map(c => String(c.getValue() ?? '')).join(' ').toLowerCase()
-    return words.every(w => rowText.includes(w))
-  }
 
   const table = useReactTable({
     data: allServers,

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Copy, Check, ExternalLink, Star } from 'lucide-react'
 import {
   Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription,
@@ -13,17 +13,27 @@ interface ServerDetailSheetProps {
   onClose: () => void
 }
 
-function CopyField({ label, value }: { label: string; value: string }) {
+function CopyField({ label, value, href }: { label: string; value: string; href?: string }) {
   const [copied, setCopied] = useState(false)
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  useEffect(() => () => { if (timerRef.current) clearTimeout(timerRef.current) }, [])
   function copy() {
     navigator.clipboard.writeText(value).then(() => {
+      if (timerRef.current) clearTimeout(timerRef.current)
       setCopied(true)
-      setTimeout(() => setCopied(false), 1500)
+      timerRef.current = setTimeout(() => setCopied(false), 1500)
     })
   }
   return (
     <div className="space-y-1">
-      <p className="text-xs text-muted-foreground">{label}</p>
+      <div className="flex items-center gap-1.5">
+        <p className="text-xs text-muted-foreground">{label}</p>
+        {href && (
+          <a href={href} target="_blank" rel="noopener noreferrer" className="text-muted-foreground/60 hover:text-muted-foreground transition-colors">
+            <ExternalLink className="h-3 w-3" />
+          </a>
+        )}
+      </div>
       <div className="flex items-center gap-2">
         <p className="font-mono text-sm break-all flex-1">{value}</p>
         <Button variant="ghost" size="icon" className="h-6 w-6 shrink-0" onClick={copy}>
@@ -86,6 +96,7 @@ export function ServerDetailSheet({ server, onClose }: ServerDetailSheetProps) {
                 <CopyField label="Server ID" value={server.id} />
                 <CopyField label="Host" value={server.host} />
                 <CopyField label="Test URL" value={server.url} />
+                <CopyField label="CLI command" value={`speedtest --server-id=${server.id}`} href="https://www.speedtest.net/apps/cli" />
               </section>
 
               <div className="border-t" />
