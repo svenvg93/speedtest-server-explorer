@@ -2,6 +2,7 @@ import { useMemo } from 'react'
 import { type ColumnDef, type Column } from '@tanstack/react-table'
 import { Copy, Check, ArrowUpDown, ArrowUp, ArrowDown, Play } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
 import { type Server } from '@/lib/types'
 import { countryFlag } from '@/lib/utils'
 
@@ -58,10 +59,12 @@ export function useServerColumns(copiedId: string | null, copyId: (id: string) =
       cell: ({ row }) => {
         const id: string = row.getValue('id')
         return (
-          <div className="flex items-center gap-1.5 text-muted-foreground text-xs tabular-nums">
-            {id}
+          <div className="flex items-center gap-1.5">
+            <Badge variant="secondary" className="font-mono font-normal tabular-nums">
+              {id}
+            </Badge>
             <Button
-              variant="outline" size="icon" className="h-6 w-6 shrink-0"
+              variant="ghost" size="icon" className="h-6 w-6 shrink-0 text-muted-foreground"
               onClick={e => { e.stopPropagation(); copyId(id) }}
             >
               {copiedId === id

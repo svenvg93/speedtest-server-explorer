@@ -118,23 +118,6 @@ export function ServerDetailSheet({ server, onClose }: ServerDetailSheetProps) {
                 </a>
               </section>
 
-              <div className="border-t" />
-
-              {/* Status */}
-              <section className="space-y-3">
-                <h3 className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Status</h3>
-                <div className="flex flex-wrap gap-2">
-                  <Badge variant={server.https_functional ? 'default' : 'outline'}>
-                    HTTPS {server.https_functional ? 'functional' : 'not functional'}
-                  </Badge>
-                  {server.preferred ? (
-                    <Badge variant="secondary" className="gap-1">
-                      <Star className="h-3 w-3 fill-yellow-500 text-yellow-500" />
-                      Preferred server
-                    </Badge>
-                  ) : null}
-                </div>
-              </section>
             </div>
           </>
         )}
