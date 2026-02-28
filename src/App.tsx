@@ -173,7 +173,7 @@ export default function App() {
           </Button>
           <ModeToggle />
           <a
-            href="https://github.com/svenvg93/ookla-server-list"
+            href="https://github.com/svenvg93/ookla-server-explorer"
             target="_blank"
             rel="noopener noreferrer"
             className="text-muted-foreground hover:text-foreground transition-colors inline-flex items-center p-2"
