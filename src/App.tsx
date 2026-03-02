@@ -312,7 +312,7 @@ export default function App() {
         {hasData && <ServersPagination table={table} />}
       </main>
 
-      <footer className="sticky bottom-0 z-10 border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-8 py-4">
+      <footer className="border-t px-8 py-4">
         <p className="text-xs text-muted-foreground text-center">
           This tool is not affiliated with, endorsed by, or connected to Ookla, LLC or Speedtest.net.
           Server data is sourced from the publicly available Speedtest server API.
