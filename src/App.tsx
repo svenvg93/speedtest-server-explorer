@@ -17,7 +17,6 @@ import {
 } from '@tanstack/react-table'
 import { Search, X, Zap, ServerOff, Info } from 'lucide-react'
 import { ModeToggle } from '@/components/mode-toggle'
-import { ServerDetailSheet } from '@/components/server-detail-sheet'
 import { AboutDialog } from '@/components/about-dialog'
 import { ServersToolbar } from '@/components/servers-toolbar'
 import { ServersPagination } from '@/components/servers-pagination'
@@ -43,8 +42,7 @@ export default function App() {
   const [query, setQuery]                   = useState(() => new URLSearchParams(window.location.search).get('q') ?? '')
   const [loading, setLoading]               = useState(false)
   const [error, setError]                   = useState<string | null>(null)
-  const [selectedServer, setSelectedServer] = useState<Server | null>(null)
-  const [aboutOpen, setAboutOpen]           = useState(false)
+  const [aboutOpen, setAboutOpen] = useState(false)
   const { copied: copiedId, copy: copyId } = useCopyToClipboard()
 
   // TanStack Table state
@@ -164,7 +162,6 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
-      <ServerDetailSheet server={selectedServer} onClose={() => setSelectedServer(null)} />
       <AboutDialog open={aboutOpen} onOpenChange={setAboutOpen} />
 
       {/* Header */}
@@ -308,11 +305,7 @@ export default function App() {
                 </TableRow>
               ) : (
                 table.getRowModel().rows.map(row => (
-                  <TableRow
-                    key={row.id}
-                    className="cursor-pointer"
-                    onClick={() => setSelectedServer(row.original)}
-                  >
+                  <TableRow key={row.id}>
                     {row.getVisibleCells().map(cell => (
                       <TableCell
                         key={cell.id}

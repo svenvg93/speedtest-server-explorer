@@ -25,7 +25,7 @@ export function useServerColumns(copiedId: string | null, copyId: (id: string) =
   return useMemo<ColumnDef<Server>[]>(() => [
     {
       accessorKey: 'sponsor',
-      size: 280,
+      size: 200,
       header: ({ column }) => <SortButton label="Sponsor / ISP" column={column} />,
       filterFn: arrIncludesValue,
     },
