@@ -15,9 +15,10 @@ import {
   type SortingState,
   type VisibilityState,
 } from '@tanstack/react-table'
-import { Search, X, Zap, ServerOff, Info } from 'lucide-react'
+import { Search, X, Zap, ServerOff, Info, BookOpen } from 'lucide-react'
 import { ModeToggle } from '@/components/mode-toggle'
 import { AboutDialog } from '@/components/about-dialog'
+import { DocsDialog } from '@/components/docs-dialog'
 import { ServersToolbar } from '@/components/servers-toolbar'
 import { ServersPagination } from '@/components/servers-pagination'
 import { useServerColumns } from '@/hooks/use-server-columns'
@@ -43,6 +44,7 @@ export default function App() {
   const [loading, setLoading]               = useState(false)
   const [error, setError]                   = useState<string | null>(null)
   const [aboutOpen, setAboutOpen] = useState(false)
+  const [docsOpen, setDocsOpen]   = useState(false)
   const { copied: copiedId, copy: copyId } = useCopyToClipboard()
 
   // TanStack Table state
@@ -163,6 +165,7 @@ export default function App() {
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <AboutDialog open={aboutOpen} onOpenChange={setAboutOpen} />
+      <DocsDialog open={docsOpen} onOpenChange={setDocsOpen} />
 
       {/* Header */}
       <header className="sticky top-0 z-10 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-8 h-14 flex items-center gap-3">
@@ -171,6 +174,14 @@ export default function App() {
         <span className="text-muted-foreground/40 select-none">·</span>
         <span className="text-xs text-muted-foreground hidden sm:block">Browse & discover Speedtest servers worldwide</span>
         <div className="ml-auto flex items-center gap-1">
+          <Button
+            variant="ghost" size="icon"
+            className="h-8 w-8 text-muted-foreground hover:text-foreground"
+            onClick={() => setDocsOpen(true)}
+            aria-label="Documentation"
+          >
+            <BookOpen className="h-4 w-4" />
+          </Button>
           <Button
             variant="ghost" size="icon"
             className="h-8 w-8 text-muted-foreground hover:text-foreground"
