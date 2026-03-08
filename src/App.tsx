@@ -82,10 +82,12 @@ export default function App() {
     try {
       const url = '/api/servers' + (apiTerm ? '?search=' + encodeURIComponent(apiTerm) : '')
       const res = await fetch(url)
-      const text = await res.text()
+      if (!res.ok) {
+        throw new Error(`Server error: ${res.status} ${res.statusText}`)
+      }
       let data: unknown
-      try { data = JSON.parse(text) }
-      catch { throw new Error('Not JSON: ' + text.slice(0, 150)) }
+      try { data = await res.json() }
+      catch { throw new Error('The server returned an unexpected response. Please check the URL and try again.') }
       if (!Array.isArray(data)) {
         const msg = (data as { error?: string })?.error
         throw new Error(msg ?? 'Unexpected response format')
@@ -153,14 +155,15 @@ export default function App() {
 
   const hasData = !loading && !error && allServers.length > 0
 
+  const filteredRows = table.getFilteredRowModel().rows
   const stats = useMemo(() => {
-    const servers = table.getFilteredRowModel().rows.map(r => r.original)
+    const servers = filteredRows.map(r => r.original)
     return {
       total: servers.length,
       countries: new Set(servers.map(s => s.cc)).size,
       isps: new Set(servers.map(s => s.sponsor)).size,
     }
-  }, [table.getFilteredRowModel().rows]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [filteredRows])
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
@@ -235,8 +238,14 @@ export default function App() {
 
         {/* Error */}
         {error && (
-          <div className="rounded-lg border border-destructive/50 bg-destructive/10 px-4 py-3 text-sm text-destructive mb-4">
-            Error: {error}
+          <div className="rounded-lg border border-destructive/50 bg-destructive/10 px-4 py-3 text-sm text-destructive mb-4 flex items-start justify-between gap-4">
+            <div>
+              <p className="font-medium">Something went wrong</p>
+              <p className="mt-0.5 text-destructive/80">{error}</p>
+            </div>
+            <Button variant="outline" size="sm" onClick={handleRefresh} className="shrink-0 text-destructive border-destructive/40 hover:bg-destructive/10">
+              Try again
+            </Button>
           </div>
         )}
 
@@ -253,6 +262,7 @@ export default function App() {
         </div>
 
         {/* Table */}
+        {(!error || allServers.length > 0) && (
         <div className="rounded-lg border">
           <Table className="table-fixed">
             <TableHeader>
@@ -312,6 +322,7 @@ export default function App() {
             </TableBody>
           </Table>
         </div>
+        )}
 
         {/* Pagination */}
         {hasData && <ServersPagination table={table} />}
